@@ -1,5 +1,6 @@
 import { users } from "../database/users";
 import { Request, Response } from "express";
+import { User } from "../models/user";
 
 export class UserController {
   //metodo
@@ -24,6 +25,71 @@ export class UserController {
         message: "Users were sucessfully listed",
         data: result.map((growdever) => growdever.toJson()),
       });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public crateUser(req: Request, res: Response) {
+    try {
+      const { name, cpf, email, age } = req.body;
+
+      const cpfValid = users.some((user) => user.cpf === cpf);
+
+      if (cpfValid) {
+        return res.status(404).send({
+          ok: false,
+          messege: "CPF already registered",
+        });
+      }
+
+      if (!name) {
+        return res.status(400).send({
+          ok: false,
+          message: "Nome was not provided",
+        });
+      }
+      if (!email) {
+        return res.status(400).send({
+          ok: false,
+          message: "E-mail was not provided",
+        });
+      }
+      if (!age) {
+        return res.status(400).send({
+          ok: false,
+          message: "Idade was not provided",
+        });
+      }
+
+      const user = new User(name, cpf, email, age);
+      users.push(user);
+
+      return res.status(201).send({
+        ok: true,
+        message: "User was successfully created",
+        data: user.toJson(),
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { email } = req.body;
+
+      const user = users.find((user) => user.id === id);
+
+      if (!user) {
+      }
     } catch (error: any) {
       return res.status(500).send({
         ok: false,

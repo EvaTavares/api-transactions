@@ -7,7 +7,7 @@ export class User {
     private _cpf: string,
     private _email: string,
     private _age: number,
-    private _transactions: number[]
+    private _transactions?: number[]
   ) {
     this._id = createUuid();
   }

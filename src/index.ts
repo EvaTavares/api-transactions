@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { users } from "./database/users";
 import { UserController } from "./controllers/user.controller";
+import { User } from "./models/user";
 
 const app = express();
 app.use(express.json());
@@ -39,36 +40,8 @@ app.get("/users/:id", (req: Request, res: Response) => {
   }
 });
 
-app.post("/users", (req: Request, res: Response, next) => {
-  try {
-    const { name, cpf, email, age } = req.body;
-
-    if (!name) {
-      return res.status(400).send({
-        ok: false,
-        message: "Nome was not provided",
-      });
-    }
-    if (!email) {
-      return res.status(400).send({
-        ok: false,
-        message: "E-mail was not provided",
-      });
-    }
-    if (!age) {
-      return res.status(400).send({
-        ok: false,
-        message: "Idade was not provided",
-      });
-    }
-  } catch (error: any) {
-    return res.status(500).send({
-      ok: false,
-      message: error.toString(),
-    });
-  }
-  next();
-});
+// criar usuario
+app.post("/users", [middleware], new UserController().crateUser);
 
 app.listen(3333, () => {
   console.log("API is running");
