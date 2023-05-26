@@ -51,4 +51,78 @@ export class TransactionController {
       });
     }
   }
+
+  public listTransaction(req: Request, res: Response) {
+    try {
+      const { userId, idTransaction } = req.params;
+
+      const user = users.find((user) => user.id === userId);
+
+      if (!user) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "User was not found" });
+      }
+
+      const transactionValid = user.transactions.find(
+        (transaction) => transaction.idTransaction === idTransaction
+      );
+
+      if (!transactionValid) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "user was not found." });
+      }
+
+      return res.status(200).send({
+        ok: true,
+        message: "Transaction was sucessfully listed",
+        data: transactionValid.toJson(),
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public listBalance(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+
+      const user = users.find((user) => user.id === userId);
+
+      if (!user) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "User was not found" });
+      }
+      //Falta terminar
+      let balance = 0;
+
+      for (const transaction of user.transactions) {
+        if (transaction.type === "income") {
+          balance += transaction.value;
+        } else {
+          balance -= transaction.value;
+        }
+      }
+
+      const listTransactions = user.transactions.map((transaction) =>
+        transaction.toJson()
+      );
+
+      return res.status(200).send({
+        ok: true,
+        message: "Transaction was sucessfully listed",
+        data: listTransactions,
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
 }

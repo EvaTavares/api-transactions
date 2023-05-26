@@ -56,6 +56,19 @@ app.post(
   [middleware],
   new TransactionController().createTransactions
 );
+
+app.get(
+  "/user/:userId/transactions/:idTransaction",
+  [middleware],
+  new TransactionController().listTransaction
+);
+
+app.get(
+  "/users/:userId/transactions",
+  [middleware],
+  new TransactionController().listBalance
+);
+
 app.listen(3333, () => {
   console.log("API is running");
 });
