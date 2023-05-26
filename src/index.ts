@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import { users } from "./database/users";
 import { UserController } from "./controllers/user.controller";
 import { User } from "./models/user";
+import { TransactionController } from "./controllers/transactions.controller";
 
 const app = express();
 app.use(express.json());
@@ -43,6 +44,18 @@ app.get("/users/:id", (req: Request, res: Response) => {
 // criar usuario
 app.post("/users", [middleware], new UserController().crateUser);
 
+// atualizar usuário
+app.put("/users/:id", [middleware], new UserController().update);
+
+// deletar usuário
+app.delete("/users/:id", [middleware], new UserController().delete);
+
+//Criar Transaction
+app.post(
+  "/user/:userId/transactions",
+  [middleware],
+  new TransactionController().createTransactions
+);
 app.listen(3333, () => {
   console.log("API is running");
 });

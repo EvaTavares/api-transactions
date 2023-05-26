@@ -89,7 +89,48 @@ export class UserController {
       const user = users.find((user) => user.id === id);
 
       if (!user) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "User was not found" });
       }
+
+      if (!email || user.email === email) {
+        return res.status(400).send({ ok: false, message: "Email is invalid" });
+      }
+
+      user.email = email;
+      return res
+        .status(201)
+        .send({ ok: true, message: "Email was successfully updated" });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const userIndex = users.findIndex((user) => user.id === id);
+
+      if (!userIndex) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "user was not found." });
+      }
+
+      const deletedUser = users.splice(userIndex, 1);
+
+      return res
+        .status(200)
+        .send({
+          ok: true,
+          message: "user was successfully deleted",
+          data: deletedUser[0].toJson(),
+        });
     } catch (error: any) {
       return res.status(500).send({
         ok: false,

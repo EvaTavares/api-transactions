@@ -1,17 +1,21 @@
 import { v4 as createUuid } from "uuid";
 
+enum StatusTransaction {
+  INCOME = "income",
+  REPROVADO = "reprovado",
+}
 export class Transaction {
-  private _id: string;
+  private _idTransaction: string;
   constructor(
     private _title: string,
     private _value: number,
-    private _type: string
+    private _type: StatusTransaction
   ) {
-    this._id = createUuid();
+    this._idTransaction = createUuid();
   }
 
-  public get id() {
-    return this._id;
+  public get idTransaction() {
+    return this._idTransaction;
   }
 
   public get title() {
@@ -28,7 +32,7 @@ export class Transaction {
 
   public toJson() {
     return {
-      id: this._id,
+      id: this._idTransaction,
       title: this._title,
       value: this._value,
       type: this._type,
