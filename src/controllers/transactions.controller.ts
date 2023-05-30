@@ -91,6 +91,8 @@ export class TransactionController {
     try {
       const { userId } = req.params;
 
+      const { type, title } = req.query;
+
       const user = users.find((user) => user.id === userId);
 
       if (!user) {
@@ -98,15 +100,41 @@ export class TransactionController {
           .status(404)
           .send({ ok: false, message: "User was not found" });
       }
-      //Falta terminar
-      let balance = 0;
+
+      const filterTitle = user.transactions.filter(
+        (transaction) => transaction.title === title
+      );
+      const filterType = user.transactions.filter(
+        (transaction) => transaction.type === type
+      );
+
+      let income = 0;
+      let outcome = 0;
 
       for (const transaction of user.transactions) {
         if (transaction.type === "income") {
-          balance += transaction.value;
+          income += transaction.value;
         } else {
-          balance -= transaction.value;
+          outcome += transaction.value;
         }
+      }
+
+      if (title) {
+        return res.status(200).send({
+          ok: true,
+          message: "Title was sucessfully listed",
+          data: filterTitle,
+          balance: { income, outcome, total: income - outcome },
+        });
+      }
+
+      if (type) {
+        return res.status(200).send({
+          ok: true,
+          message: "Type was sucessfully listed",
+          data: filterType,
+          balance: { income, outcome, total: income - outcome },
+        });
       }
 
       const listTransactions = user.transactions.map((transaction) =>
@@ -117,6 +145,7 @@ export class TransactionController {
         ok: true,
         message: "Transaction was sucessfully listed",
         data: listTransactions,
+        balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
       return res.status(500).send({

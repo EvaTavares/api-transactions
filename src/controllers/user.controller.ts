@@ -23,7 +23,15 @@ export class UserController {
       return res.status(200).send({
         ok: true,
         message: "Users were sucessfully listed",
-        data: result.map((growdever) => growdever.toJson()),
+        // data: result.map((growdever) => growdever.toJson()),
+        data: result.map((user) => {
+          return {
+            name: user.toJson().name,
+            email: user.toJson().email,
+            cpf: user.toJson().cpf,
+            id: user.toJson().id,
+          };
+        }),
       });
     } catch (error: any) {
       return res.status(500).send({
@@ -124,13 +132,11 @@ export class UserController {
 
       const deletedUser = users.splice(userIndex, 1);
 
-      return res
-        .status(200)
-        .send({
-          ok: true,
-          message: "user was successfully deleted",
-          data: deletedUser[0].toJson(),
-        });
+      return res.status(200).send({
+        ok: true,
+        message: "user was successfully deleted",
+        data: deletedUser[0].toJson(),
+      });
     } catch (error: any) {
       return res.status(500).send({
         ok: false,

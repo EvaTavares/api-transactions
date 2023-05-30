@@ -3,11 +3,11 @@ import { users } from "./database/users";
 import { UserController } from "./controllers/user.controller";
 import { User } from "./models/user";
 import { TransactionController } from "./controllers/transactions.controller";
+import { StatusCodes } from "http-status-codes";
 
 const app = express();
 app.use(express.json());
 const middleware = (req: Request, res: Response, next: NextFunction) => {
-  console.log("recebeu e passou");
   next();
 };
 //Rota de usuários
@@ -28,13 +28,14 @@ app.get("/users/:id", (req: Request, res: Response) => {
       });
     }
 
-    return res.status(200).send({
+    return res.status(StatusCodes.OK).send({
       ok: true,
       message: "users was sucessfully obtained",
       data: result.toJson(),
     });
   } catch (error: any) {
-    return res.status(500).send({
+    // status
+    return res.status(StatusCodes.BAD_GATEWAY).send({
       ok: false,
       message: error.toString(),
     });

@@ -2,8 +2,9 @@ import { v4 as createUuid } from "uuid";
 
 enum StatusTransaction {
   INCOME = "income",
-  REPROVADO = "reprovado",
+  OUTCOME = "outcome",
 }
+
 export class Transaction {
   private _idTransaction: string;
   constructor(
