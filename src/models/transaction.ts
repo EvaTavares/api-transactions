@@ -22,13 +22,22 @@ export class Transaction {
   public get title() {
     return this._title;
   }
+  public set title(title: string) {
+    this._title = title;
+  }
 
   public get value() {
     return this._value;
   }
+  public set value(value: number) {
+    this._value = value;
+  }
 
   public get type() {
     return this._type;
+  }
+  public set type(type: StatusTransaction) {
+    this._type = type;
   }
 
   public toJson() {

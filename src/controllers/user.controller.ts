@@ -1,6 +1,7 @@
 import { users } from "../database/users";
 import { Request, Response } from "express";
 import { User } from "../models/user";
+import { StatusCodes } from "http-status-codes";
 
 export class UserController {
   //metodo
@@ -20,28 +21,54 @@ export class UserController {
         result = users.filter((user) => user.cpf === cpf);
       }
 
-      return res.status(200).send({
+      return res.status(StatusCodes.OK).send({
         ok: true,
         message: "Users were sucessfully listed",
         // data: result.map((growdever) => growdever.toJson()),
         data: result.map((user) => {
           return {
+            id: user.toJson().id,
             name: user.toJson().name,
             email: user.toJson().email,
             cpf: user.toJson().cpf,
-            id: user.toJson().id,
           };
         }),
       });
     } catch (error: any) {
-      return res.status(500).send({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
         ok: false,
         message: error.toString(),
       });
     }
   }
 
-  public crateUser(req: Request, res: Response) {
+  public listUserId(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const result = users.find((user) => user.id === id);
+
+      if (!result) {
+        return res.status(StatusCodes.NOT_FOUND).send({
+          ok: false,
+          message: "User was not found",
+        });
+      }
+
+      return res.status(StatusCodes.OK).send({
+        ok: true,
+        message: "users was sucessfully obtained",
+        data: result.toJson(),
+      });
+    } catch (error: any) {
+      // status
+      return res.status(StatusCodes.BAD_GATEWAY).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+  public createUser(req: Request, res: Response) {
     try {
       const { name, cpf, email, age } = req.body;
 

@@ -1,6 +1,5 @@
 import { users } from "../database/users";
 import { Request, Response } from "express";
-import { User } from "../models/user";
 import { Transaction } from "../models/transaction";
 
 export class TransactionController {
@@ -146,6 +145,88 @@ export class TransactionController {
         message: "Transaction was sucessfully listed",
         data: listTransactions,
         balance: { income, outcome, total: income - outcome },
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public updateBalance(req: Request, res: Response) {
+    try {
+      const { userId, idTransaction } = req.params;
+      const { type, value, title } = req.body;
+
+      const user = users.find((user) => user.id === userId);
+
+      if (!user) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "User was not found" });
+      }
+
+      const transactionIndex = user.transactions.find(
+        (transaction) => transaction.idTransaction === idTransaction
+      );
+
+      if (!transactionIndex) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "Transaction was not found." });
+      }
+
+      if (!type || !title || !value) {
+        return res
+          .status(400)
+          .send({ ok: false, message: "Transaction is invalid" });
+      }
+
+      transactionIndex.title = title;
+      transactionIndex.type = type;
+      transactionIndex.value = value;
+
+      return res
+        .status(201)
+        .send({ ok: true, message: "Transação was successfully updated" });
+    } catch (error: any) {
+      return res.status(500).send({
+        ok: false,
+        message: error.toString(),
+      });
+    }
+  }
+
+  public deleteTransaction(req: Request, res: Response) {
+    try {
+      const { userId, idTransaction } = req.params;
+
+      const user = users.find((user) => user.id === userId);
+
+      if (!user) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "User was not found." });
+      }
+
+      const transactionIndex = user.transactions.findIndex(
+        (transaction) => transaction.idTransaction === idTransaction
+      );
+
+      if (transactionIndex === -1) {
+        return res
+          .status(404)
+          .send({ ok: false, message: "Transaction was not found." });
+      }
+
+      const deletedTransaction = user.transactions.splice(transactionIndex, 1);
+
+      return res.status(200).send({
+        ok: true,
+        message: "Transaction was delete",
+        data: deletedTransaction[0].toJson(),
+        // balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
       return res.status(500).send({

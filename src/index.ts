@@ -4,70 +4,56 @@ import { UserController } from "./controllers/user.controller";
 import { User } from "./models/user";
 import { TransactionController } from "./controllers/transactions.controller";
 import { StatusCodes } from "http-status-codes";
+import { UserMiddleware } from "./middleware/user.middleware";
 
 const app = express();
 app.use(express.json());
-const middleware = (req: Request, res: Response, next: NextFunction) => {
-  next();
-};
+
 //Rota de usuários
 //listar usuários
-app.get("/users", [middleware], new UserController().getAllUsers);
+app.get("/users", new UserController().getAllUsers);
 
 // listar por id
-app.get("/users/:id", (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const result = users.find((user) => user.id === id);
-
-    if (!result) {
-      return res.status(404).send({
-        ok: false,
-        message: "User was not found",
-      });
-    }
-
-    return res.status(StatusCodes.OK).send({
-      ok: true,
-      message: "users was sucessfully obtained",
-      data: result.toJson(),
-    });
-  } catch (error: any) {
-    // status
-    return res.status(StatusCodes.BAD_GATEWAY).send({
-      ok: false,
-      message: error.toString(),
-    });
-  }
-});
+app.get("/users/:id", new UserController().listUserId);
 
 // criar usuario
-app.post("/users", [middleware], new UserController().crateUser);
+app.post("/users", new UserController().createUser);
 
 // atualizar usuário
-app.put("/users/:id", [middleware], new UserController().update);
+app.put("/users/:id", new UserController().update);
 
 // deletar usuário
-app.delete("/users/:id", [middleware], new UserController().delete);
+app.delete("/users/:id", new UserController().delete);
 
 //Criar Transaction
 app.post(
   "/user/:userId/transactions",
-  [middleware],
+  [UserMiddleware.validateUser],
   new TransactionController().createTransactions
 );
 
 app.get(
   "/user/:userId/transactions/:idTransaction",
-  [middleware],
+  [UserMiddleware.validateUser],
   new TransactionController().listTransaction
 );
 
 app.get(
   "/users/:userId/transactions",
-  [middleware],
+  [UserMiddleware.validateUser],
   new TransactionController().listBalance
+);
+
+app.put(
+  "/user/:userId/transactions/:idTransaction",
+  [UserMiddleware.validateUser],
+  new TransactionController().updateBalance
+);
+
+app.delete(
+  "/user/:userId/transactions/:idTransaction",
+  [UserMiddleware.validateUser],
+  new TransactionController().deleteTransaction
 );
 
 app.listen(3333, () => {
