@@ -68,6 +68,7 @@ export class UserController {
       });
     }
   }
+
   public createUser(req: Request, res: Response) {
     try {
       const { name, cpf, email, age } = req.body;
@@ -151,7 +152,7 @@ export class UserController {
 
       const userIndex = users.findIndex((user) => user.id === id);
 
-      if (!userIndex) {
+      if (userIndex < 0) {
         return res
           .status(404)
           .send({ ok: false, message: "user was not found." });

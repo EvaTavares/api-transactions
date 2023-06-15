@@ -19,7 +19,7 @@ export class TransactionController {
       if (!title) {
         return res.status(400).send({
           ok: false,
-          message: "title was not provided",
+          message: "Title was not provided",
         });
       }
       if (!value) {
@@ -36,7 +36,7 @@ export class TransactionController {
       }
 
       const newTransaction = new Transaction(title, value, type);
-      user.transactions?.push(newTransaction);
+      user.transactions.push(newTransaction);
 
       return res.status(200).send({
         ok: true,
@@ -46,7 +46,7 @@ export class TransactionController {
     } catch (error: any) {
       return res.status(500).send({
         ok: false,
-        message: error.toString(),
+        message: "caiu aqui",
       });
     }
   }
