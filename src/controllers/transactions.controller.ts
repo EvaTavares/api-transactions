@@ -1,6 +1,8 @@
 import { users } from "../database/users";
 import { Request, Response } from "express";
 import { Transaction } from "../models/transaction";
+import { StatusCodes } from "http-status-codes";
+import { ApiResponse } from "../utils/http-response.adapter";
 
 export class TransactionController {
   public createTransactions(req: Request, res: Response) {
@@ -11,43 +13,29 @@ export class TransactionController {
       const user = users.find((user) => user.id === userId);
 
       if (!user) {
-        return res
-          .status(404)
-          .send({ ok: false, message: "User was not found" });
+        return ApiResponse.notFound(res, "User");
       }
 
       if (!title) {
-        return res.status(400).send({
-          ok: false,
-          message: "Title was not provided",
-        });
+        return ApiResponse.notProvided(res, "Title");
       }
       if (!value) {
-        return res.status(400).send({
-          ok: false,
-          message: "Value was not provided",
-        });
+        return ApiResponse.notProvided(res, "Value");
       }
       if (!type) {
-        return res.status(400).send({
-          ok: false,
-          message: "Type was not provided",
-        });
+        return ApiResponse.notProvided(res, "Type");
       }
 
       const newTransaction = new Transaction(title, value, type);
       user.transactions.push(newTransaction);
 
-      return res.status(200).send({
-        ok: true,
-        message: "Transaction were sucessfully listed",
-        data: newTransaction.toJson(),
-      });
+      return ApiResponse.success(
+        res,
+        "Transaction were sucessfully listed",
+        newTransaction
+      );
     } catch (error: any) {
-      return res.status(500).send({
-        ok: false,
-        message: "caiu aqui",
-      });
+      return ApiResponse.serverError(res, error);
     }
   }
 
@@ -58,9 +46,7 @@ export class TransactionController {
       const user = users.find((user) => user.id === userId);
 
       if (!user) {
-        return res
-          .status(404)
-          .send({ ok: false, message: "User was not found" });
+        return ApiResponse.notFound(res, "User");
       }
 
       const transactionValid = user.transactions.find(
@@ -68,21 +54,16 @@ export class TransactionController {
       );
 
       if (!transactionValid) {
-        return res
-          .status(404)
-          .send({ ok: false, message: "user was not found." });
+        return ApiResponse.notFound(res, "Transaction");
       }
 
-      return res.status(200).send({
-        ok: true,
-        message: "Transaction was sucessfully listed",
-        data: transactionValid.toJson(),
-      });
+      return ApiResponse.success(
+        res,
+        "Transaction was successfully listed",
+        transactionValid
+      );
     } catch (error: any) {
-      return res.status(500).send({
-        ok: false,
-        message: error.toString(),
-      });
+      return ApiResponse.serverError(res, error);
     }
   }
 
@@ -147,10 +128,7 @@ export class TransactionController {
         balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
-      return res.status(500).send({
-        ok: false,
-        message: error.toString(),
-      });
+      return ApiResponse.serverError(res, error);
     }
   }
 
@@ -191,10 +169,7 @@ export class TransactionController {
         .status(201)
         .send({ ok: true, message: "Transação was successfully updated" });
     } catch (error: any) {
-      return res.status(500).send({
-        ok: false,
-        message: error.toString(),
-      });
+      return ApiResponse.serverError(res, error);
     }
   }
 
@@ -229,10 +204,7 @@ export class TransactionController {
         // balance: { income, outcome, total: income - outcome },
       });
     } catch (error: any) {
-      return res.status(500).send({
-        ok: false,
-        message: error.toString(),
-      });
+      return ApiResponse.serverError(res, error);
     }
   }
 }
